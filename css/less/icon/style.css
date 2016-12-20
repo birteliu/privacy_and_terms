@@ -1,0 +1,36 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('fonts/icomoon.eot?kfu1wu');
+  src:  url('fonts/icomoon.eot?kfu1wu#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?kfu1wu') format('truetype'),
+    url('fonts/icomoon.woff?kfu1wu') format('woff'),
+    url('fonts/icomoon.svg?kfu1wu#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-webduino-logo:before {
+  content: "\e902";
+}
+.icon-power-off:before {
+  content: "\e900";
+}
+.icon-power-on:before {
+  content: "\e901";
+}
+

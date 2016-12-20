@@ -1,0 +1,182 @@
+/* icon font */
+
+@import "less/icon/style.css";
+
+/* Core variables and mixins */
+
+@import "less/_all_variables.less";
+@import "less/_all_mixin.less";
+
+/* body */
+
+@import "less/body.less";
+
+/* main */
+
+.form-control:focus {
+  outline: none;
+  box-shadow: none;
+  border: none;
+}
+
+input,
+button,
+.btn {
+  outline: none;
+  box-shadow: none;
+  border: none;
+  &:focus {
+    outline: none;
+    box-shadow: none;
+    border: none;
+  }
+}
+#btn-signin{
+  margin-top:10px;
+  margin-bottom:10px;
+}
+
+
+/* variables */
+
+@signbox-top: 80px;
+@signbox-width: 500px;
+.signbox() {
+  font-family: verdana;
+  width:80%;
+  max-width: @signbox-width;
+  margin: @signbox-top auto 0;
+  padding: 0;
+  position: relative;
+  .panel.panel-info {
+    margin: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+  }
+  input {
+    &:focus {
+      border: 1px solid #888;
+    }
+  }
+  .panel-heading {
+    background: @main-dark;
+    color: #fff;
+    height: 50px;
+    padding: 0 30px 0 0;
+    border: none;
+    div {
+      height: 50px;
+      line-height: 50px;
+      &:first-child {
+        border-radius: 3px 0 0 0;
+        padding: 0 30px;
+        background: @main-red;
+      }
+    }
+    a {
+      color: #fff;
+    }
+    .panel-title {
+      float: left;
+    }
+  }
+}
+
+#signinbox {
+  .signbox();
+  .forgot {
+    float: right;
+    font-size: 13px;
+    position: relative;
+    top: 0;
+    a {
+      color: @main-dark-l30;
+      &:hover {
+        color: @main-dark-l50;
+      }
+    }
+  }
+  .panel-body {
+    padding: 40px 30px 30px;
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, .5) 0 20px 50px;
+    border-radius:0 0 5px 5px;
+  }
+  .input-group {
+    margin-bottom: 25px;
+    &.remember {
+      margin-bottom: 0;
+    }
+  }
+  .goto-signup {
+    margin-top: 10px;
+    left: 15px;
+    color: rgba(255, 255, 255, .8);
+    text-shadow: rgba(0, 0, 0, .5) 0 0 10px;
+    a {
+      display: inline-block;
+      color: rgba(0, 220, 255, .8);
+      text-decoration: none;
+      &:hover {
+        color: rgba(0, 255, 255, 1);
+      }
+    }
+  }
+}
+
+#signupbox {
+  display: none;
+  .signbox();
+  .panel-body {
+    padding: 40px 30px 30px;
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, .5) 0 20px 50px;
+    border-radius:0 0 5px 5px;
+  }
+  .input-group {
+    margin-bottom: 25px;
+  }
+  .goto-signin {
+    margin-top: 10px;
+    left: 15px;
+    color: rgba(255, 255, 255, .8);
+    text-shadow: rgba(0, 0, 0, .5) 0 0 10px;
+    a {
+      display: inline-block;
+      color: rgba(0, 220, 255, .7);
+      text-decoration: none;
+      &:hover {
+        color: rgba(0, 255, 255, 1);
+      }
+    }
+  }
+}
+
+#resetpass {
+  display: none;
+  .signbox();
+  .panel-body {
+    padding: 40px 30px 30px;
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, .5) 0 20px 50px;
+    border-radius: 0 0 5px 5px;
+  }
+  .input-group {
+    margin-bottom: 25px;
+  }
+  .goto-signin {
+    margin-top: 10px;
+    left: 15px;
+    color: rgba(255, 255, 255, .8);
+    text-shadow: rgba(0, 0, 0, .5) 0 0 10px;
+    a {
+      display: inline-block;
+      color: rgba(0, 220, 255, .7);
+      text-decoration: none;
+      &:hover {
+        color: rgba(0, 255, 255, 1);
+      }
+    }
+  }
+}

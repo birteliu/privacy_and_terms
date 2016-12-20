@@ -1,0 +1,47 @@
+.transition(@t){
+	transition:@t;
+	-webkit-transition:@t;
+	-moz-transition:@t;
+}
+
+/* user menu open animation */
+.user-menu-animation(@n,@t){
+	-webkit-animation:@n @t 1 forwards;
+	-moz-animation:@n @t 1 forwards;
+	animation:@n @t 1 forwards;
+}
+.user-menu-keyframes(@n,@y){
+	@-webkit-keyframes @n{
+	  0%{
+	    top:@y;
+	    opacity:0;
+	  }
+	  100%{
+	    top:@y + 5px;
+	    opacity:1;
+	  }
+	}
+
+	@-moz-keyframes @n{
+	  0%{
+	    top:@y;
+	    opacity:0;
+	  }
+	  100%{
+	    top:@y + 5px;
+	    opacity:1;
+	  }
+	}
+
+	@keyframes @n{
+	  0%{
+	    top:@y;
+	    opacity:0;
+	  }
+	  100%{
+	    top:@y + 5px;
+	    opacity:1;
+	  }
+	}
+}
+

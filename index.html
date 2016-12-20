@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Dashboard - Webduino Device</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <!-- <meta name="description" content=""> -->
+  <link rel="icon" href="webduino.ico" type="image/x-icon">
+  <link rel="stylesheet" href="components/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="components/animate.css/animate.min.css">
+  <link rel="stylesheet" href="components/bootstrap-table/dist/bootstrap-table.min.css">
+  <link rel="stylesheet" href="components/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css">
+  <link rel="stylesheet" href="components/ladda/dist/ladda-themeless.min.css">
+  <link rel="stylesheet" href="components/components-font-awesome/css/font-awesome.min.css">
+  <!-- build:css -->
+  <link rel="stylesheet/less" type="text/css" href="css/dashboard.less" />
+  <script src="components/less/dist/less.min.js"></script>
+  <!-- endbuild -->
+  <script src="components/js-cookie/src/js.cookie.js"></script>
+  <script>
+  var access_token = Cookies.get('access_token'),
+    userId = Cookies.get('userId');
+
+  if (!access_token || !userId) {
+    location.href = '/signin.html';
+  }
+
+  function logOut() {
+    $.ajax({
+      method: 'post',
+      url: '/api/users/logout',
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader('Authorization', access_token);
+      }
+    }).complete(function() {
+      Cookies.remove('access_token');
+      Cookies.remove('userId');
+      location.href = '/signin.html';
+    });
+  }
+  </script>
+</head>
+
+<body class="my-vue-i18n">
+<div class="out-side">
+  <!-- navbar -->
+  <nav id="navbar-darkgreen" class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="navbar-header">
+      <span><a class="navbar-brand"><span class="icon-webduino-logo"></span> Webduino</a>
+      </span>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse sidebar-navbar-collapse">
+      <div id="dashboard" class="dashboard-nav">
+        <ul class="nav">
+          <!-- <ul class="nav navbar-nav"> -->
+          <li v-bind:class="{active: active.all}">
+            <a href="#" data-target="webduinoDevice" data-i18n="[prepend]dashboard-nav.mydevices" v-on:click.prevent="click('all')">
+              <span v-text="text.all"></span>
+            </a>
+            <ul class="nav navbar-nav nav-second-level">
+              <li v-bind:class="{active: active.mark1}">
+                <a href="#" data-i18n="[prepend]dashboard-nav.mark1" v-on:click.prevent="click('mark1')">
+                  <span v-text="text.mark1"></span>
+                </a>
+              </li>
+              <li v-bind:class="{active: active.fly}">
+                <a href="#" data-i18n="[prepend]dashboard-nav.fly" v-on:click.prevent="click('fly')">
+                  <span v-text="text.fly"></span>
+                </a>
+              </li>
+              <li v-bind:class="{active: active.smart}">
+                <a href="#" data-i18n="[prepend]dashboard-nav.smart" v-on:click.prevent="click('smart')">
+                <span v-text="text.smart"></span>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <!-- <li>
+            <a data-toggle="collapse" href="#device" aria-expanded="true" aria-controls="device" data-i18n="[prepend]dashboard-nav.device">
+              <b class="caret"></b>
+            </a>
+            <div class="collapse in" id="device">
+              <ul class="nav navbar-nav nav-second-level">
+                <li class="active">
+                  <a href="#" data-target="webduinoDevice" data-i18n="dashboard-nav.mydevices"></a>
+                </li>
+              </ul>
+            </div>
+          </li> -->
+        </ul>
+      </div><!--/.sidebar-nav -->
+      <div class="container-fluid">
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"><i class="glyphicon glyphicon-user"></i>
+            <span class="container-fluid-user" data-i18n="dashboard-nav.user"></span>
+            </a>
+            <ul class="dropdown-menu user-menu" role="menu">
+              <!-- <li><a href="#" class="js-profile"><i class="glyphicon glyphicon-user"></i> Profile</a></li>
+              <li role="separator" class="divider"></li> -->
+              <li class="email"></li>
+              <li class="lang">
+                <i class="glyphicon glyphicon-globe"></i><form role="search">
+                  <select id="language" class="form-control">
+                    <option value="zh_tw" data-i18n="navigation.language.zh_tw"></option>
+                    <option value="en" data-i18n="navigation.language.en"></option>
+                  </select>
+                </form>
+              </li>
+              <li><a href="#" class="js-logout"><i class="glyphicon glyphicon-log-out"></i> <span data-i18n="[append]navigation.logout"></span></a></li>
+            </ul>
+          </li>
+          <!-- <li><a href="/"><i class="glyphicon glyphicon-plus"></i> Account</a></li>
+          <li><a href="/"><i class="glyphicon glyphicon-cog"></i> Settings</a></li>
+          <li><a href="/"><i class="glyphicon glyphicon-comment"></i> Notifications</a></li> -->
+        </ul>
+      </div>
+    </div><!--/.nav-collapse -->
+  </nav><!--/.navbar -->
+
+  <!-- main -->
+  <main id="edit-area" class="webduinoDevice">
+    <div class="container-fluid webduinoDevice">
+      <div class="k2-my-toolbar">
+        <div class="form-inline">
+          <div data-toggle="tooltip" data-placement="top" data-i18n="[title]toolbar.add">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target=".js-modal-addDevice">
+              <i class="fa fa-plus fa-lg" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div data-toggle="tooltip" data-placement="top" v-bind:data-title="title_remove">
+            <button type="button" class="btn btn-default js-remove" v-bind:disabled="disabled_remove" v-on:click="remove">
+              <i class="fa fa-trash-o fa-lg" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div data-toggle="tooltip" data-placement="top" v-bind:data-title="title_burn">
+              <button type="button" class="btn btn-default js-burn" data-toggle="modal" v-bind:data-target="modalType" v-bind:disabled="disabled_burn">
+              <i class="fa fa-fire fa-lg" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <table class="js-myfile-table"
+      data-id-field="id"
+      data-unique-id="id"
+      data-search="true"
+      data-click-to-select="true"
+      data-mobile-responsive="true"
+      data-toolbar=".k2-my-toolbar"></table>
+    </div><!-- /.webduinoDevice -->
+  </main><!-- /main-->
+
+  <!-- modal.js-modal-addDevice -->
+  <div class="modal fade js-modal-addDevice" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" data-i18n="add-device.title"></h4>
+        </div>
+        <div class="modal-body">
+          <form role="form">
+            <div class="form-group">
+              <label for="addDeviceId" class="control-label" data-i18n="add-device.deviceId"></label><div class="help-block with-errors"></div>
+              <input type="text" class="form-control" id="addDeviceId" data-i18n="[data-error]dashboard-nav.error" required v-model="deviceId" v-on:keydown.enter.stop="exec">
+            </div>
+            <div class="form-group">
+              <label class="control-label" data-i18n="add-device.deviceType"></label>
+              <div class="form-group select-board">
+                <label class="btn btn-default" v-bind:disabled="burning">
+                  <input type="radio" name="deviceType" value="mark1" v-model="deviceType">
+                  <img src="media/webduino-mark1.png">
+                </label>
+                <label class="btn btn-default" v-bind:disabled="burning">
+                  <input type="radio" name="deviceType" value="fly" v-model="deviceType">
+                  <img src="media/webduino-fly.png">
+                </label>
+                <label class="btn btn-default" v-bind:disabled="burning">
+                  <input type="radio" name="deviceType" value="smart" v-model="deviceType">
+                  <img src="media/webduino-smart.png">
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="addDeviceComment" class="control-label" data-i18n="add-device.comment"></label>
+              <input type="text" class="form-control" id="addDeviceComment" v-model="comment" v-on:keydown.enter.stop="exec">
+            </div>
+          </form>
+          <div class="form-group" v-show="message">
+            <label class="control-label" data-i18n="add-device.message"></label>
+            <p class="message">{{ message }}</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal" data-i18n="add-device.close"></button>
+          <button type="button" class="btn btn-primary ladda-button js-exec" data-style="expand-right" data-i18n="add-device.exec" v-on:click.stop="exec"></button>
+        </div>
+      </div>
+    </div>
+  </div><!--/modal.js-modal-addDevice-->
+
+  <!-- modal.js-modal-burn -->
+  <div class="modal fade js-modal-burn" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" data-i18n="burnFirmware.title"></h4>
+        </div>
+        <div class="modal-body">
+          <form role="form">
+            <div class="form-group">
+              <label class="control-label" data-i18n="burnFirmware.describeLabel"></label>
+              <p data-i18n="burnFirmware.describeText"></p>
+            </div>
+            <div class="form-group">
+              <label class="control-label" data-i18n="burnFirmware.type"></label>
+              <div class="form-group">
+                <label class="btn btn-default active" style="padding: 3px;" v-bind:disabled="burning">
+                  <input type="radio" name="deviceType" value="mark1" style="position: absolute;" v-model="deviceType">
+                  <image src="media/webduino-mark1.png" style="height: 100px"></image>
+                </label>
+                <label class="btn btn-default" style="padding: 3px;" v-bind:disabled="burning">
+                  <input type="radio" name="deviceType" value="fly" style="position: absolute;" v-model="deviceType">
+                  <image src="media/webduino-fly.png" style="height: 100px"></image>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label" data-i18n="burnFirmware.describeLabel_firmware"></label>
+              <p data-i18n="burnFirmware.describeText_firmware"></p>
+            </div>
+            <div class="form-group">
+              <label class="control-label" data-i18n="burnFirmware.fmTypeLabel"></label>
+              <select class="form-control" name="firmwareType" v-model="firmwareType" v-bind:disabled="burning">
+                <option value="1" data-i18n="burnFirmware.fmType.val1"></option>
+                <option value="2" data-i18n="burnFirmware.fmType.val2"></option>
+                <option value="3" data-i18n="burnFirmware.fmType.val3"></option>
+                <option value="4" data-i18n="burnFirmware.fmType.val4"></option>
+                <option value="5" data-i18n="burnFirmware.fmType.val5"></option>
+                <option value="6" data-i18n="burnFirmware.fmType.val6"></option>
+                <option value="7" data-i18n="burnFirmware.fmType.val7"></option>
+              </select>
+            </div>
+            <div class="form-group" v-show="message">
+              <label class="control-label" data-i18n="burnFirmware.message"></label>
+              <div v-if=" typeof message === 'object' ">
+                <p v-for="(idx, info) in message" v-bind:class="{ 'bg-success': info.status, 'bg-danger': !info.status }">
+                  {{ info.deviceId }} : {{ info.message }}
+                </p>
+              </div>
+              <p class="bg-danger" v-if=" typeof message === 'string' ">{{ message }}</p>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <div class="progress progress-striped active" v-show="burning">
+            <div class="progress-bar progress-bar-success" v-bind:class="{ 'twenty-sec-ease-in-out': burning }" role="progressbar"></div>
+          </div>
+          <button type="button" class="btn btn-default" data-dismiss="modal" data-i18n="burnFirmware.close"></button>
+          <button type="button" class="btn btn-primary js-exec" data-i18n="burnFirmware.burn" v-on:click.stop="exec"></button>
+        </div>
+      </div>
+    </div>
+  </div><!--/modal.js-modal-burn-->
+
+  <!-- modal.js-modal-burn-mark1 -->
+  <div class="modal fade js-modal-burn-mark1" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" data-i18n="burnMark1.title"></h4>
+        </div>
+        <div class="modal-body">
+          <form role="form">
+            <div class="form-group">
+              <label class="control-label" data-i18n="burnMark1.describeLabel"></label>
+              <p data-i18n="[append]burnMark1.describeText">
+                <i class="fa fa-warning fa-lg text-danger" aria-hidden="true"></i>
+              </p>
+            </div>
+            <div class="form-group">
+              <label class="control-label" data-i18n="burnMark1.describeLabel_firmware"></label>
+              <p data-i18n="burnMark1.describeText_firmware"></p>
+            </div>
+            <div class="form-group">
+              <label class="control-label" data-i18n="burnMark1.fmTypeLabel"></label>
+              <select class="form-control" name="firmwareType" v-model="firmwareType" v-bind:disabled="burning">
+                <option value="1" data-i18n="burnMark1.fmType.val1"></option>
+                <!-- <option value="2" data-i18n="burnMark1.fmType.val2"></option> -->
+                <!-- <option value="3" data-i18n="burnMark1.fmType.val3"></option> -->
+                <!-- <option value="4" data-i18n="burnMark1.fmType.val4"></option> -->
+                <option value="5" data-i18n="burnMark1.fmType.val5"></option>
+                <option value="6" data-i18n="burnMark1.fmType.val6"></option>
+                <option value="7" data-i18n="burnMark1.fmType.val7"></option>
+              </select>
+            </div>
+            <div class="form-group" v-show="message">
+              <label class="control-label" data-i18n="burnMark1.message"></label>
+              <div v-if=" typeof message === 'object' ">
+                <p v-for="(idx, info) in message" v-bind:class="{ 'bg-success': info.status, 'bg-danger': !info.status }">
+                  {{ info.deviceId }} : {{ info.message }}
+                </p>
+              </div>
+              <p class="bg-danger" v-if=" typeof message === 'string' ">{{ message }}</p>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <div class="progress progress-striped active" v-show="burning">
+            <div class="progress-bar progress-bar-success" v-bind:class="{ 'twenty-sec-ease-in-out': burning }" role="progressbar"></div>
+          </div>
+          <button type="button" class="btn btn-default" data-dismiss="modal" data-i18n="burnMark1.close"></button>
+          <button type="button" class="btn btn-primary js-exec" data-i18n="burnMark1.burn" v-on:click.stop="exec"></button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /modal.js-modal-burn-mark1 -->
+
+  <!-- modal.js-modal-burn-fly -->
+  <div class="modal fade js-modal-burn-fly" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" data-i18n="burnFly.title"></h4>
+        </div>
+        <div class="modal-body">
+          <form role="form">
+            <div class="form-group">
+              <label class="control-label" data-i18n="burnFly.describeLabel"></label>
+              <p data-i18n="[append]burnFly.describeText">
+                <i class="fa fa-warning fa-lg text-danger" aria-hidden="true"></i>
+              </p>
+            </div>
+            <div class="form-group">
+              <label class="control-label" data-i18n="burnFly.describeLabel_firmware"></label>
+              <p data-i18n="burnFly.describeText_firmware"></p>
+            </div>
+            <div class="form-group">
+              <label class="control-label" data-i18n="burnFly.fmTypeLabel"></label>
+              <select class="form-control" name="firmwareType" v-model="firmwareType" v-bind:disabled="burning">
+                <option value="1" data-i18n="burnFly.fmType.val1"></option>
+                <option value="2" data-i18n="burnFly.fmType.val2"></option>
+                <option value="3" data-i18n="burnFly.fmType.val3"></option>
+                <option value="4" data-i18n="burnFly.fmType.val4"></option>
+                <option value="5" data-i18n="burnFly.fmType.val5"></option>
+                <option value="6" data-i18n="burnFly.fmType.val6"></option>
+                <option value="7" data-i18n="burnFly.fmType.val7"></option>
+              </select>
+            </div>
+            <div class="form-group" v-show="message">
+              <label class="control-label" data-i18n="burnFly.message"></label>
+              <div v-if=" typeof message === 'object' ">
+                <p v-for="(idx, info) in message" v-bind:class="{ 'bg-success': info.status, 'bg-danger': !info.status }">
+                  {{ info.deviceId }} : {{ info.message }}
+                </p>
+              </div>
+              <p class="bg-danger" v-if=" typeof message === 'string' ">{{ message }}</p>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <div class="progress progress-striped active" v-show="burning">
+            <div class="progress-bar progress-bar-success" v-bind:class="{ 'twenty-sec-ease-in-out': burning }" role="progressbar"></div>
+          </div>
+          <button type="button" class="btn btn-default" data-dismiss="modal" data-i18n="burnFly.close"></button>
+          <button type="button" class="btn btn-primary js-exec" data-i18n="burnFly.burn" v-on:click.stop="exec"></button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /modal.js-modal-burn-fly -->
+
+  <!-- modal.js-modal-burn-smart -->
+  <div class="modal fade js-modal-burn-smart" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" data-i18n="burnSmart.title"></h4>
+        </div>
+        <div class="modal-body">
+          <form role="form">
+            <div class="form-group">
+              <label class="control-label" data-i18n="burnSmart.describeLabel"></label>
+              <p data-i18n="[append]burnSmart.describeText">
+                <i class="fa fa-warning fa-lg text-danger" aria-hidden="true"></i>
+              </p>
+            </div>
+            <div class="form-group" v-show="message">
+              <label class="control-label" data-i18n="burnSmart.message"></label>
+              <div v-if=" typeof message === 'object' ">
+                <p v-for="(idx, info) in message" v-bind:class="{ 'bg-success': info.status, 'bg-danger': !info.status }">
+                  {{ info.deviceId }} : {{ info.message }}
+                </p>
+              </div>
+              <p class="bg-danger" v-if=" typeof message === 'string' ">{{ message }}</p>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <div class="progress progress-striped active" v-show="burning">
+            <div class="progress-bar progress-bar-success" v-bind:class="{ 'twenty-sec-ease-in-out': burning }" role="progressbar"></div>
+          </div>
+          <button type="button" class="btn btn-default" data-dismiss="modal" data-i18n="burnSmart.close"></button>
+          <button type="button" class="btn btn-primary js-exec" data-i18n="burnSmart.burn" v-on:click.stop="exec"></button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /modal.js-modal-burn-smart -->
+
+  <!-- modal.js-modal-linkDevice -->
+  <div class="js-modal-linkDevice-container">
+    <div class="modal fade js-modal-linkDevice-step1" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" data-i18n="link-device.title.step1"></h4>
+          </div>
+          <div class="modal-body">
+            <form role="form">
+              <div class="form-group">
+                <label class="control-label" data-i18n="link-device.describeLabel"></label>
+                <p class="text-info" data-i18n="link-device.describe.step1"></p>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" data-i18n="link-device.cancel"></button>
+            <button type="button" class="btn btn-primary js-exec" data-dismiss="modal" data-toggle="modal" data-target=".js-modal-linkDevice-step2" data-i18n="link-device.next" v-bind:disabled="isDisabledNext_step1"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade js-modal-linkDevice-step2" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" data-i18n="link-device.title.step2"></h4>
+          </div>
+          <div class="modal-body">
+            <form role="form">
+              <div class="form-group">
+                <label class="control-label" data-i18n="link-device.describeLabel"></label>
+                <p class="text-info" data-i18n="link-device.describe.step2"></p>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" data-i18n="link-device.cancel"></button>
+            <button type="button" class="btn btn-primary js-exec" data-dismiss="modal" data-toggle="modal" data-target=".js-modal-linkDevice-step3" data-i18n="link-device.next" v-bind:disabled="isDisabledNext_step2"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade js-modal-linkDevice-step3" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" data-i18n="link-device.title.step3"></h4>
+          </div>
+          <div class="modal-body">
+            <form role="form">
+              <div class="form-group">
+                <label class="control-label" data-i18n="link-device.describeLabel"></label>
+                <p class="text-info" data-i18n="link-device.describe.step3"></p>
+              </div>
+              <div class="form-group" v-show="message">
+                <label class="control-label" data-i18n="link-device.message"></label>
+                <p class="message">{{ message }}</p>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" data-i18n="link-device.cancel"></button>
+            <button type="button" class="btn btn-primary ladda-button js-exec" data-style="expand-right" data-i18n="link-device.verify"  v-on:click.stop="verify" v-show="!isFailed">
+            </button>
+            <button type="button" class="btn btn-primary ladda-button js-exec" data-style="expand-right" data-i18n="link-device.reVerify"  v-on:click.stop="reVerify" v-show="isFailed">
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!--/modal.js-modal-linkDevice-->
+
+  <div class="js-vue-deviceInfo"></div>
+
+  <script src="components/jquery/dist/jquery.min.js"></script>
+  <script src="components/moment/min/moment.min.js"></script>
+  <script src="components/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="components/bootstrap-validator/dist/validator.min.js"></script>
+  <script src="components/bootstrap-table/dist/bootstrap-table.min.js"></script>
+  <script src="components/bootstrap-table/dist/extensions/mobile/bootstrap-table-mobile.min.js"></script>
+  <script src="components/bootstrap-table/dist/extensions/editable/bootstrap-table-editable.min.js"></script>
+  <script src="components/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+  <script src="components/remarkable-bootstrap-notify/dist/bootstrap-notify.min.js"></script>
+  <script src="components/i18next/i18next.min.js"></script>
+  <script src="components/bootbox.js/bootbox.js"></script>
+  <script src="components/ladda/dist/spin.min.js"></script>
+  <script src="components/ladda/dist/ladda.min.js"></script>
+  <script src="components/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+  <script src="lib/mqttws31.min.js"></script>
+  <script src="lib/Arbiter.js"></script>
+  <script src="components/vue/dist/vue.min.js"></script>
+  <!-- build:js -->
+  <script src="dao/UserDao.js"></script>
+  <script src="js/myMqtt.js"></script>
+  <script src="index.js"></script>
+  <!-- endbuild -->
+</body>
+
+</html>
