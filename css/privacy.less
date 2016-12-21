@@ -1,9 +1,12 @@
-/* Core variables and mixins */
 
-@import "_all_variables.less";
-@import "_all_mixin.less";
+@main-dark: #3a4a58;
+@main-red: #e65128;
 
-/* variables */
+.transition(@t){
+  transition:@t;
+  -webkit-transition:@t;
+  -moz-transition:@t;
+}
 
 html{
   width:100%;
